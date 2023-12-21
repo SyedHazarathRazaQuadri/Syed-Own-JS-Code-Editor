@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Code Editor</title>
+    <link rel="icon" type="image/x-icon" href="https://syed-hazarath-portfolio.netlify.app/static/media/portfolioProfileImage.4e934b2c4fc12b7d5435.png"  />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/theme/dracula.min.css">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            overflow-y: hidden;
+        }
+        #editor {
+            height: 80vh;
+            width: 100%;
+        }
+        #output-container {
+            display: flex;
+            flex-direction: row;
+            border-bottom: 1px solid darkblue;
+            height: 60px;
+            margin-top: -8px;
+        }
+        #web-output,
+        #console-output {
+            flex: 1;
+            overflow: auto;
+            padding: 10px;
+        }
+        .web-view, .console-view{
+            display: inline-block;
+            padding-left: 1rem;
+        }
+        #web-output-area {
+            flex-basis: 50%;
+            height: 60vh;
+            border-right: 4px solid #261933;
+            padding: 10px;
+            overflow: auto;
+        }
+
+        #console-area {
+            height: 60vh;
+            overflow: auto;
+            padding: 10px;
+            flex-basis: 50%;
+        }
+        #run-code{
+            margin-right: 2rem;
+            background: green;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+        }
+        #clear-console{
+            margin-right: 2rem;
+            background: #941153;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+        }
+        .output_area{
+            border-bottom: 1px solid #dde2f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: black;
+            height: 45px;
+            position: sticky;
+            background: white;
+            top: 0;
+        }
+        .output-container{
+            background-color: #fefefe;
+        }
+        #web-output{
+            font-size: 20px;
+            padding: 4px;
+        }
+        #console-output p{
+            font-size: 20px;
+            border-bottom: 1px dashed darkblue;
+            height: 25px;
+            padding-bottom: 6px;
+            margin: 0 0 7px 0;
+        }
+    </style>
+</head>
+<body>
+    <textarea id="editor" class="editor code_editor"></textarea>
+    <div id="output-container">
+        <div id="web-output-area" class="output">
+            <div class="output_area"><h3 class="web-view">Web View:</h3><button id="run-code">Run Code</button></div>
+            <div id="web-output" class="output"></div>
+        </div>
+        <div id="console-area" class="output">
+            <div class="output_area"><h3 class="console-view">Console: </h3><button id="clear-console">Console ⭕️</button></div>
+            <div id="console-output" class="output"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/mode/javascript/javascript.js"></script>
+    <script>
+        const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+            lineNumbers: true,
+            mode: 'javascript',
+            theme: 'dracula',
+        });
+
+        editor.setValue('document.getElementById("web-output").innerHTML = "Welcome Syed World !";\n\nconsole.log("Hey Syed Console View is Working");');
+
+
+        document.getElementById('run-code').addEventListener('click', function () {
+            const code = editor.getValue();
+            document.getElementById('web-output').innerHTML = '';
+            document.getElementById('console-output').innerHTML = '';
+            const originalConsoleLog = console.log;
+            console.log = function (output) {
+                document.getElementById('console-output').innerHTML += `<p>${output}</p>`;
+                originalConsoleLog.apply(console, arguments);
+            };
+            try {
+                eval(code);
+            } catch (error) {
+                console.error(error);
+                document.getElementById('console-output').innerHTML += `<p>${error.toString()}</p>`;
+            }
+            console.log = originalConsoleLog;
+        });
+
+        document.getElementById('clear-console').addEventListener('click', function () {
+            document.getElementById('console-output').innerHTML = '';
+        });
+    </script>
+</body>
+</html>
